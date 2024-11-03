@@ -84,27 +84,14 @@ The goal of ANOVA is to test whether the null hypothesis can be rejected, indica
 We use the following Python code to plot the empirical probability density function (PDF) of the "Average Age" (Col[7]) and perform the Shapiro-Wilk test to assess the normality of the data:
 
 \begin{verbatim}
-    import pandas as pd
-    import numpy as np
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-    from scipy import stats
-
-    data = pd.read_excel('data.xlsx')
+    data = pd.read_excel('data.xlsx') # Load data from Excel file
     col_7 = data.iloc[:, 6]  
 
     sns.kdeplot(col_7, bw_adjust=0.5)
-    plt.title('Empirical PDF of Col[7]')
-    plt.xlabel('Average Age')
-    plt.ylabel('Density')
-    plt.grid()
-    plt.show()
-
+    # Plot Here()
     statistic, p_value = stats.shapiro(col_7) 
-    print(f'Statistic: {statistic}, p-value: {p_value}')
 
-    alpha = 0.05
-    if p_value > alpha:
+    if p_value > alpha: # alpha is the significance level (e.g., 0.05)
         print("Fail to reject null hypothesis.")
     else:
         print("Reject null hypothesis.")
@@ -123,129 +110,147 @@ According to the Shapiro-Wilk test, the p-value is less than 0.05, indicating th
 
 \subsection*{(b) Normality and Homogeneity of Variance Tests}
 
-
-To test the homogeneity of variance assumption, we can use Levene's test. The following Python code demonstrates how to perform Levene's test to assess the homogeneity of variance across the different group categories:
+For each category (i = 1, ..., 5), the Shapiro-Wilk test is applied to assess the normality of the data within that category. If the p-value from the test is greater than 0.05, we cannot reject the null hypothesis, meaning the data appears to follow a normal distribution. Otherwise, the data does not follow a normal distribution.
+By running the code, we can know that except the category 3, even if in the same category, the data does not follow a normal distribution.
 
 \begin{verbatim}
-    import pandas as pd
-    from scipy import stats
-    from statsmodels.stats.proportion import proportions_ztest
-
-    # Read data
-    data = pd.read_excel('data.xlsx')
-
-    # Extract column 7 and categories
-    col_7 = data.iloc[:, 6]  # 7th column
-    categories = data['群类别']  # Assuming the category column is named 'category'
-
-    # Test normality for each category
-    for i in range(1, 6):  # Assuming categories are labeled from 1 to 5
-        group = col_7[categories == i]
-        statistic, p_value = stats.shapiro(group)  # Shapiro-Wilk test
-        print(f'Category {i}: Statistic={statistic}, p-value={p_value}')
-        if p_value > 0.05:
-            print(f'Category {i} appears to be normally distributed')
+    # Spilt data by category, return `average_age_by_category` as a list of arrays.
+    for i, group_data in enumerate(average_age_by_category, start=1):
+        shapiro_result = stats.shapiro(group_data)
+        if shapiro_result.pvalue < alpha:
+            print(f"Category {i} does not obey a normal distribution")
         else:
-            print(f'Category {i} does not appear to be normally distributed')
-
-    # Test homogeneity of variances
-    groups = [col_7[categories == i] for i in range(1, 6)]
-    stat, p_value_var = stats.levene(*groups)  # Levene's test
-    print(f'Levene’s test: Statistic={stat}, p-value={p_value_var}')
-    if p_value_var > 0.05:
-        print('Homogeneity of variances is assumed (fail to reject H0)')
-    else:
-        print('Homogeneity of variances is not assumed (reject H0)')
-
+            print(f"Category {i} seems to obey a normal distribution")
 \end{verbatim}
 
-The code first reads the data from Col[7] and the category labels. For each category (i = 1, ..., 5), the Shapiro-Wilk test is applied to assess the normality of the data within that category. If the p-value from the test is greater than 0.05, we cannot reject the null hypothesis, meaning the data appears to follow a normal distribution. Otherwise, the data does not follow a normal distribution.
 
-Next, the Levene's test is performed to check the homogeneity of variances across the five categories. A p-value greater than 0.05 indicates that the assumption of equal variances holds, while a smaller p-value suggests significant variance differences between categories.
-
-By running the code, we can know that even if in the same category, the data does not follow a normal distribution. The homogeneity of variances is not assumed. The output of the code is as follows:
-
+The Levene's test is performed to check the homogeneity of variances across the five categories. A p-value greater than 0.05 indicates that the assumption of equal variances holds, while a smaller p-value suggests significant variance differences between categories.
+By running the code, we can know that the homogeneity of variances is not assumed.
 \begin{verbatim}
-    Category 1: Statistic=0.9889177019317387, p-value=0.0010068367942714259
-    Category 1 does not appear to be normally distributed (reject H0)
-    Category 2: Statistic=0.9866028570038597, p-value=0.006910100085120613
-    Category 2 does not appear to be normally distributed (reject H0)
-    Category 3: Statistic=0.9894059994096522, p-value=0.15584690304319565
-    Category 3 appears to be normally distributed (fail to reject H0)
-    Category 4: Statistic=0.9838728658098733, p-value=0.00011372764101030563
-    Category 4 does not appear to be normally distributed (reject H0)
-    Category 5: Statistic=0.9546671623519278, p-value=4.544352530487091e-13
-    Category 5 does not appear to be normally distributed (reject H0)
-    Levene’s test: Statistic=61.01927977094263, p-value=9.677355333795493e-49
-    Homogeneity of variances is not assumed (reject H0)
-
+    levene_test_result = stats.levene(*average_age_by_category)
+    if levene_test_result.pvalue > alpha:
+        print("Homogeneity of variances is assumed.")
+    else:
+        print("Homogeneity of variances is not assumed.")
 \end{verbatim}
 
 \subsection*{(c) One-Way ANOVA Test}
 
-To determine whether the average age significantly varies across the different group categories, we can perform a one-way ANOVA test. The following Python code demonstrates how to conduct the ANOVA test using the \texttt{scipy.stats} library:
+We utilized the ordinary least squares (OLS) method to define the ANOVA model, where the average age (Column 6) was treated as the dependent variable, and the category (Column 1) was the independent variable.
+
 
 \begin{verbatim}
-    import pandas as pd
-    from scipy import stats
-    import seaborn as sns
-    import matplotlib.pyplot as plt
+    model = ols('data.iloc[:, 6] ~ C(data.iloc[:, 1])', data=data).fit()
+    anova_result = anova_lm(model)
+\end{verbatim}
+The ANOVA results, specifically the p-value (PR(>F)), were examined to test the null hypothesis that the average age does not vary significantly across categories.
 
-
-    data = pd.read_excel('data.xlsx')
-    col_7 = data.iloc[:, 6]
-    categories_col_2 = data.iloc[:, 1]
-
-    groups = [col_7[categories_col_2 == category] for category in categories_col_2.unique()]
-
-
-    stat, p_value = stats.f_oneway(*groups)
-    print(f'ANOVA test statistic: {stat}, p-value: {p_value}')
-
-    plt.figure(figsize=(10, 6))
-    sns.boxplot(x=categories_col_2, y=col_7)
-    plt.title('Boxplot of Col[7] Across Categories in Col[2]')
-    plt.xlabel('Category (Col[2])')
-    plt.ylabel('Values of Col[7]')
-    plt.grid()
-    plt.show()
-
-    alpha = 0.05
-    if p_value > alpha:
-        print("No significant difference between the means of the groups.")
-    else:
+\begin{verbatim}
+    if anova_result['PR(>F)'].iloc[0] < alpha:
         print("Significant difference between the means of the groups.")
+    else:
+        print("No significant difference between the means of the groups.")
 \end{verbatim}
 
-
-We performed a one-way ANOVA test to compare the means of Col[7] across different categories in Col[2]. The ANOVA test resulted in a test statistic of \texttt{stat} and a p-value of \texttt{p\_value}. In addition, we plotted a boxplot to visualize the distribution of Col[7] across different categories in Col[2], which provides an intuitive view of the differences in means and variances between groups. 
-
-
-The output of the code is as follows, we can know that the p-value is less than 0.05, indicating that we reject the null hypothesis of equal means across the groups. Therefore, there is a significant difference in the average age across the different group categories.
+A boxplot was generated to visualize the distribution of average age across different categories. We can see that there has a significant differences in average age between categories
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{image/output2.png}  
+    \includegraphics[width=0.65\textwidth]{image/output2.png}  
     \label{fig:Output for ANOVA test}
 \end{figure}
 
+\newpage
 \section*{Problem 4}
+The analysis was carried out on three key columns: \textbf{Group Size, Message Count, and Sex Ratio}.
+
+First, we perform a normality testing for each three columns by using the Shapiro-Wilk test. 
+\begin{verbatim}
+    for col_index in columns_to_analyze:
+        normality_result = stats.shapiro(col_data)
+        if normality_result.pvalue < alpha:
+            print("Do not following the normal distribution")
+        else:
+            print("Following the normal distribution")
+\end{verbatim}
+
+To address non-normal distributions, we applied a log transformation to each feature and then repeated the Shapiro-Wilk test. This transformation helps reduce skewness and potentially brings the data closer to a normal distribution.
+\begin{verbatim}
+        log_data = np.log(col_data + 1)  
+        log_normality_result = stats.shapiro(log_data)
+        if log_normality_result.pvalue < 0.05:
+            print("Its log transformation does not obey the normal distribution")
+        else:
+            print("Its log transformation obey the normal distribution")
+\end{verbatim}
+
+Then we plotted the histograms of the original and log-transformed data separately as follows.We can see that neither the raw data nor the log-transformed data conform to a normal distribution.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.54\textwidth]{image/output3.png}  
+    \label{fig:PDF of Original and Log-transformed Data}
+\end{figure}
+\newpage
+
+\section*{Problem 5}
+
+\subsection*{(a) Alternative Methods for One-Way ANOVA with Non-Normal Data}
+
+When the data does not meet the normality assumption, we can use non-parametric tests as alternatives to one-way ANOVA. Here are some alternative methods:
+
+\begin{itemize}
+    \item \textbf{Kruskal-Wallis H Test}: A rank-based test that evaluates whether the medians of two or more groups are different. It is commonly used when data is not normally distributed.
+    \item \textbf{Box-Cox or Yeo-Johnson Transformation}:  Data transformations can sometimes bring the data closer to a normal distribution, allowing for a standard ANOVA.
+    \item \textbf{Welch’s ANOVA}: A modified ANOVA that does not require equal variances and is less sensitive to violations of normality.
+    \item \textbf{Permutational ANOVA}: Uses permutation methods to calculate p-values, making it robust to non-normal data.
+\end{itemize}
+
+\subsection*{(b) Kruskal-Wallis H Test Implementation}
+
+To minimize the effects of skewness and extreme values, we applied a log transformation to each feature before performing the Kruskal-Wallis H test. 
+
+\begin{verbatim}
+    kruskal_result = stats.kruskal(*log_column_data)
+    print("Kruskal-Wallis H Test Result:")
+    print(kruskal_result)
+
+    if kruskal_result.pvalue < alpha:
+        print("Significant differences among the log-transformed feature columns.")
+    else:
+        print("No significant differences among the log-transformed feature columns.")
+
+\end{verbatim}
+
+To illustrate the distribution of each feature before and after log transformation, we plotted boxplots for both the original and log-transformed data.
+
+We can see that the Kruskal-Wallis H test results indicate significant differences among the log-transformed feature columns.
+\newpage
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{image/output4.png}  
+    \label{fig:Boxplot of Original and Log-transformed Data}
+\end{figure}
 
 \newpage
 \begin{thebibliography}{99}
 
-    \bibitem{CCS229LectureNotes}
-    Andrew Ng, Tengyu Ma. \textit{CCS 229 Lecture Notes}. Stanford University, 2023. Available online at: \url{{https://cs229.stanford.edu/}}
+    \bibitem{seaborn}
+    Waskom, M. L. (2021). Seaborn: statistical data visualization. \emph{Journal of Open Source Software}, 6(60), 3021. Available: https://doi.org/10.21105/joss.03021.
     
-    \bibitem{ConvexOptimization}
-    Stephen Boyd, Lieven Vandenberghe. \textit{Convex Optimization}. Cambridge University Press, 2004.
+    \bibitem{statsmodels}
+    Seabold, S., Perktold, J. (2010). Statsmodels: Econometric and statistical modeling with python. In \emph{9th Python in Science Conference} (pp. 92-96). Available: https://conference.scipy.org/proceedings/scipy2010/pdfs/seabold.pdf.
     
-    \bibitem{ChatGPT}
-    OpenAI. \textit{ChatGPT: A Conversational AI}. 2023. Available online at: \url{{https://www.openai.com/chatgpt}}
+    \bibitem{kruskalwallis}
+    Kruskal, W. H., Wallis, W. A. (1952). Use of ranks in one-criterion variance analysis. \emph{Journal of the American Statistical Association}, 47(260), 583-621. Available: https://doi.org/10.1080/01621459.1952.10483441.
     
-    \bibitem{chung2001stochastic}
-    K. L. Chung. \textit{Stochastic Processes}. 2nd ed. Springer, 2001.
-
+    \bibitem{anova}
+    Fisher, R. A. (1925). Statistical Methods for Research Workers. \emph{Edinburgh: Oliver and Boyd}.
+    
+    \bibitem{openai_chatgpt}
+    OpenAI. (2024). ChatGPT: Language model for interactive support in scientific research. Available: https://openai.com/chatgpt.
+    
     \end{thebibliography}
+    
     
 \end{document}   

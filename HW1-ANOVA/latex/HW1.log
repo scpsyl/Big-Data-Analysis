@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.10.2)  19 OCT 2024 20:31
+This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.10.2)  3 NOV 2024 22:47
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -350,59 +350,44 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1]
 File: image/output1.png Graphic file (type bmp)
 <image/output1.png>
- [2]
-Missing character: There is no 群 (U+7FA4) in font [lmmono12-regular]:!
-Missing character: There is no 类 (U+7C7B) in font [lmmono12-regular]:!
-Missing character: There is no 别 (U+522B) in font [lmmono12-regular]:!
 
-Overfull \hbox (32.97197pt too wide) in paragraph at lines 160--160
-[]    \TU/lmtt/m/n/12 categories = data['群类别']  # Assuming the category column is named 'category'[] 
+Overfull \hbox (59.97197pt too wide) in paragraph at lines 124--124
+[]    \TU/lmtt/m/n/12 # Spilt data by category, return `average_age_by_category` as a list of arrays.[] 
  []
 
-
-Overfull \hbox (22.89198pt too wide) in paragraph at lines 160--160
-[]            \TU/lmtt/m/n/12 print(f'Category {i} does not appear to be normally distributed')[] 
- []
-
-
-Overfull \hbox (10.44804pt too wide) in paragraph at lines 182--182
-[]    \TU/lmtt/m/n/12 Category 1: Statistic=0.9889177019317387, p-value=0.0010068367942714259[] 
- []
-
-[3]
-Overfull \hbox (4.26805pt too wide) in paragraph at lines 182--182
-[]    \TU/lmtt/m/n/12 Category 2: Statistic=0.9866028570038597, p-value=0.006910100085120613[] 
- []
-
-
-Overfull \hbox (16.65204pt too wide) in paragraph at lines 182--182
-[]    \TU/lmtt/m/n/12 Category 4: Statistic=0.9838728658098733, p-value=0.00011372764101030563[] 
- []
-
-
-Overfull \hbox (10.46005pt too wide) in paragraph at lines 182--182
-[]    \TU/lmtt/m/n/12 Category 5: Statistic=0.9546671623519278, p-value=4.544352530487091e-13[] 
- []
-
-
-Overfull \hbox (22.77203pt too wide) in paragraph at lines 182--182
-[]    \TU/lmtt/m/n/12 Levene’s test: Statistic=61.01927977094263, p-value=9.677355333795493e-49[] 
- []
-
-
-Overfull \hbox (115.59201pt too wide) in paragraph at lines 218--218
-[]    \TU/lmtt/m/n/12 groups = [col_7[categories_col_2 == category] for category in categories_col_2.unique()][] 
- []
-
-
-Overfull \hbox (10.532pt too wide) in paragraph at lines 218--218
+[2]
+Overfull \hbox (10.532pt too wide) in paragraph at lines 153--153
 []        \TU/lmtt/m/n/12 print("No significant difference between the means of the groups.")[] 
  []
 
-[4]
 File: image/output2.png Graphic file (type bmp)
 <image/output2.png>
- [5] [6] (./HW1.aux)
+[3]
+Overfull \hbox (47.612pt too wide) in paragraph at lines 185--185
+[]            \TU/lmtt/m/n/12 print("Its log transformation does not obey the normal distribution")[] 
+ []
+
+File: image/output3.png Graphic file (type bmp)
+<image/output3.png>
+[4]
+Overfull \hbox (2.22891pt too wide) in paragraph at lines 204--205
+\TU/lmr/m/n/12 times bring the data closer to a normal distribution, allowing for a standard ANOVA. 
+ []
+
+
+Overfull \hbox (59.97203pt too wide) in paragraph at lines 223--223
+[]        \TU/lmtt/m/n/12 print("Significant differences among the log-transformed feature columns.")[] 
+ []
+
+
+Overfull \hbox (78.51202pt too wide) in paragraph at lines 223--223
+[]        \TU/lmtt/m/n/12 print("No significant differences among the log-transformed feature columns.")[] 
+ []
+
+[5]
+File: image/output4.png Graphic file (type bmp)
+<image/output4.png>
+ [6] [7] (./HW1.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
@@ -411,12 +396,12 @@ Package rerunfilecheck Info: File `HW1.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 10389 strings out of 474773
- 158930 string characters out of 5761289
- 1933842 words of memory out of 5000000
- 32409 multiletter control sequences out of 15000+600000
+ 10409 strings out of 474773
+ 159389 string characters out of 5761289
+ 1929842 words of memory out of 5000000
+ 32427 multiletter control sequences out of 15000+600000
  563162 words of font info for 66 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  72i,11n,79p,453b,486s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on HW1.pdf (7 pages).
+Output written on HW1.pdf (8 pages).
